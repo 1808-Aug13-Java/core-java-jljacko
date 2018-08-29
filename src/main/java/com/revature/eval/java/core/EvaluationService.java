@@ -1,10 +1,22 @@
 package com.revature.eval.java.core;
 
+import java.time.DateTimeException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.UnsupportedTemporalTypeException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EvaluationService {
+	
+
+	
 
 	/**
 	 * 1. Without using the StringBuilder or StringBuffer class, write a method that
@@ -14,8 +26,19 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String reverse(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		
+		// Do a null check
+		if(string == null)
+			return null;
+		
+		// Start with an empty string
+		String returnable = "";
+		
+		// Simply go through the original string backwards
+		for(int rust = string.length() - 1; rust > -1; rust--)
+			returnable += string.charAt(rust);
+		
+		return returnable;
 	}
 
 	/**
@@ -27,8 +50,20 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		
+		// Split by any word separator, whitespace or dash
+		String[] words = phrase.split("[ \n\t\r-]++");
+		
+		String returnable = "";
+		
+		// Add the First letter of each word
+		for(int rust = 0; rust < words.length;rust++)
+		{
+			returnable += words[rust].charAt(0);
+		}
+		
+		// Return, but make sure they're all capital letters
+		return returnable.toUpperCase();
 	}
 
 	/**
@@ -81,18 +116,18 @@ public class EvaluationService {
 		}
 
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			
+			return sideThree == sideTwo && sideTwo == sideOne;
 		}
 
 		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
-			return false;
+
+			return sideThree == sideTwo || sideTwo == sideOne
+					|| sideThree == sideOne;
 		}
 
 		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			return !isIsosceles();
 		}
 
 	}
@@ -112,9 +147,53 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+	public int getScrabbleScore(String string) 
+	{
+		// Create an array whose values indicate the scrabble scores and
+		// indices represent the letter
+		int[] scrabbleScores =
+			{
+					1, // A = 1
+					3, // B = 3
+					3, // C = 3
+					2, // D = 2
+					1, // E = 1
+					4, // F = 4
+					2, // G = 2
+					4, // H = 4
+					1, // I = 1
+					8, // J = 8
+					5, // K = 5
+					1, // L = 1
+					3, // M = 3
+					1, // N = 1
+					1, // O = 1
+					3, // P = 3
+					10, // Q = 10
+					1, // R = 1
+					1, // S = 1
+					1, // T = 1
+					1, // U = 1
+					4, // V = 4
+					4, // W = 4
+					8, // X = 8
+					4, // Y = 4
+					10 // Z =  10
+			};
+		
+		// Make it lower-case to simplify the operation
+		string = string.toLowerCase();
+		int returnable = 0;
+		
+		// Go through each letter and use the letter as an index to the array
+		for(int c = 0; c < string.length();c++)
+		{
+			char ch = string.charAt(c);
+			// Add up the score pointed to by the letter
+			if(ch >= 'a' && ch <= 'z')
+				returnable += scrabbleScores[ch - 'a'];
+		}
+		return returnable;
 	}
 
 	/**
@@ -149,8 +228,25 @@ public class EvaluationService {
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
 	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		String returnable = "";
+		
+		// Go through the string and append only numbers
+		for(int rust = 0; rust < string.length();rust++)
+		{
+			char ch = string.charAt(rust);
+			if(ch >= '0' && ch <= '9')
+				returnable += ch;
+		}
+		
+		// The length needs to be that of a phone number
+		if(returnable.length() != 10 && returnable.length() != 9)
+			throw new IllegalArgumentException();
+		
+		// Remove the 1 in a ten digit phone number if present
+		if(returnable.length() == 10 && returnable.charAt(0) == '1')
+			returnable = returnable.substring(1);
+		
+		return returnable;
 	}
 
 	/**
@@ -162,9 +258,33 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public Map<String, Integer> wordCount(String string) 
+	{
+		// Declare what needs to be returned
+		Map<String, Integer> ret = new HashMap<String, Integer>();
+		
+		// Split by what actually separates words
+		String[] words = string.split("[ \n\t\r,]++");
+		
+		// Go through each word
+		for(int rust = 0; rust < words.length; rust++)
+		{
+			// Get the current count of the word
+			Integer i = ret.get(words[rust]);
+			if(i == null)
+			{
+				// First occurrence of the word, set it as 1
+				ret.put(words[rust], 1);
+			}
+			else
+			{
+				// Already present, increment its count
+				i += 1;
+				ret.put(words[rust], i);
+			}
+		}
+		
+		return ret;
 	}
 
 	/**
@@ -205,9 +325,95 @@ public class EvaluationService {
 	static class BinarySearch<T> {
 		private List<T> sortedList;
 
-		public int indexOf(T t) {
-			// TODO Write an implementation for this method declaration
-			return 0;
+		public int indexOf(T t) 
+		{
+			// First check for bad input
+			if(t == null)
+				return -1;
+			if (sortedList == null)
+				return -1;
+			
+			
+			// Set up the half-way point as well as the mechanism for 
+			// moving the index up or down
+			int index = sortedList.size() / 2;
+			int div = index / 2;
+			
+			int count = 0;
+			
+			try
+			{
+				// Under this scenario, we assume we are working with Integers
+				while(div >= 0 && count <= 4)
+				{
+					// Get the item to check
+					T item = sortedList.get(index);
+					if((Integer)item > (Integer)t)
+					{
+						// We are too high, go lower
+						index -= div;
+					}
+					else if((Integer)item < (Integer)t)
+					{
+						// We are too low, go higher
+						index += div;
+					}
+					else // We found it!
+						return index;
+					
+					// Reduce the index mover
+					div /= 2;
+					
+					// If it gets to zero (and it has during testing), make it one
+					// Else we're stuck
+					if(div == 0)
+						div++;
+				
+					// increment the one count so we don't search forever for what's
+					// not there
+					if(div == 1)
+						count++;
+				}
+			}
+			catch(ClassCastException e)
+			{
+				try
+				{
+					// Assuming it is a String
+					Integer i = Integer.parseInt((String)t);
+					
+					// Follow the same procedure as above
+					while(div >= 0 && count <= 4)
+					{
+						T sItem = sortedList.get(index);
+						Integer item = Integer.parseInt((String)sItem);
+						if(item > i)
+						{
+						index -= div;
+						}
+						else if(item < i)
+						{
+						index += div;
+						}
+						else
+						return index;
+					div /= 2;
+					
+					if(div == 0)
+						div++;
+					
+					if(div == 1)
+						count++;
+					}
+				}
+				catch(ClassCastException | NumberFormatException e2)
+				{
+					return -1; // The String theory didn't work
+				}
+			}
+			
+			// We have not found our target
+			return -1;
 		}
 
 		public BinarySearch(List<T> sortedList) {
@@ -226,6 +432,17 @@ public class EvaluationService {
 	}
 
 	/**
+	 * isVowel - helper method to report a letter's status as a vowel or not
+	 * @param c - the character to look at
+	 * @return boolean - whether the provided letter is a vowel or not
+	 */
+	private boolean isVowel(char c)
+	{
+		return c == 'a' || c == 'e' || c == 'i'
+				|| c == 'o' || c == 'u';
+	}
+	
+	/**
 	 * 8. Implement a program that translates from English to Pig Latin.
 	 * 
 	 * Pig Latin is a made-up children's language that's intended to be confusing.
@@ -242,9 +459,71 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public String toPigLatin(String string) 
+	{
+		// Split up the words
+		String[] words = string.split("[ \n\t\r,]++");
+		
+		// Go through each word
+		for(int rust = 0; rust < words.length; rust++)
+		{
+			String word = words[rust];
+			
+			// Get the first character.
+			char fl = word.charAt(0);
+			if(isVowel(fl))
+			{
+				// If first letter is vowel, simply add "ay" at the end
+				word += "ay";
+			}
+			else
+			{
+				// Put non-vowels at the end
+				fl = Character.toLowerCase(fl);
+				word += fl;
+				
+				// Handle the "qu" case
+				if(fl == 'q')
+				{
+					word += "u";
+					word = word.substring(2);
+				}
+				else if(word.length() > 1 && !isVowel(word.charAt(1)))
+				{
+					// Need to put all non-vowels before the first vowel in the back 
+					int c = 1;
+					for( ; c < word.length() && !isVowel(word.charAt(c)); c++)
+					{
+						
+					}
+					for(int C = 1; C < c ; C++)
+						word += word.charAt(C);
+					
+					// Remove the moved letters from the front
+					word = word.substring(c);
+				}
+				else
+					word = word.substring(1);
+				word += "ay";
+				
+			}
+			// Update word array
+			words[rust] = word;
+		}
+		
+		String ret = "";
+		
+		// Put spaces between the words...
+		for(int c = 0; c < words.length; c++)
+		{
+			ret += words[c];
+			
+			// ... but not the end of the phrase
+			if(c != words.length - 1)
+				ret += " ";
+		}
+		
+		return ret;
 	}
 
 	/**
@@ -263,8 +542,55 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isArmstrongNumber(int input) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		
+		int test = 1, digitCount = 0;
+		
+		// Need to figure out how many digits there are
+		while(input / test > 0)
+		{
+			test *= 10;
+			digitCount++;
+		}
+		
+		// Make sure dividing by test gets us above zero
+		test /= 10;
+		int cutInput = input;
+		
+		int armComp = 0;
+		
+		// Go through all the digits
+		while(cutInput > 0 && test > 0)
+		{
+			// Add by the digit value pow'd to the digit count
+			armComp += Math.pow(cutInput/test, digitCount);
+			
+			// Remove the just used digit
+			cutInput = cutInput - (cutInput / test) * test;
+
+			// Reduce the divider to get the next digit
+			test /= 10;
+		}
+		
+		return input == armComp;
+	}
+	
+	/**
+	 * isPrime - brute-force helper method for determining if a number is prime
+	 * @param l - the number to check
+	 * @return boolean - whether @param l is prime
+	 */
+	private boolean isPrime(long l)
+	{
+		// Start at 2 and stop before l as (1 and l) are acceptable in a prime number
+		for(long c = 2; c < l; c++)
+		{
+			// if true, then we found a factor that breaks l's status as a prime number
+			if(l % c == 0)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -277,9 +603,47 @@ public class EvaluationService {
 	 * @param l
 	 * @return
 	 */
-	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public List<Long> calculatePrimeFactorsOf(long l) 
+	{
+		// Set up an arrayList to return
+		ArrayList<Long> ret = new ArrayList<Long>();
+		
+		// If our parameter is already prime, we have a base case
+		if(isPrime(l))
+		{
+			ret.add(l);
+			return ret;
+		}
+		
+		// We don't have our base case so break our number down further
+		for(long rust = 2; rust <= (l / 2); rust++)
+		{
+			if(l % rust == 0)
+			{
+				// We found potential factors so check them both
+				if(isPrime(rust))
+					ret.add(rust);
+				else
+				{
+					// We have a factor, but not a prime number so break it down further
+					ArrayList<Long> r = (ArrayList<Long>) calculatePrimeFactorsOf(rust);
+					ret.addAll(r);
+				}
+				
+				// Get the other factor and repeat the break down
+				long other = l / rust;
+				if(isPrime(other))
+					ret.add(other);
+				else
+				{
+					ArrayList<Long> r = (ArrayList<Long>) calculatePrimeFactorsOf(other);
+					ret.addAll(r);
+				}
+				break;
+			}
+		}
+		
+		return ret;
 	}
 
 	/**
@@ -317,8 +681,36 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			
+			// Start out with an empty string and perform a null check on the parameter
+			String ret = "";
+			if(string == null)
+				return ret;
+			
+			// Go through each letter and perform the rotation
+			for(int rust = 0; rust < string.length();rust++)
+			{
+				char ch = string.charAt(rust);
+				if(ch >= 'a' && ch <= 'z')
+				{
+					// Add the key to the lower-case letter and reduce value by 26 if over 'z'
+					ch += key;
+					if (ch > 'z')
+						ch -= 26;
+				}
+				else if(ch >= 'A' && ch <= 'Z')
+				{
+					// Add key to upper-case letter
+					ch += key;
+					if (ch > 'Z')
+						ch -= 26;
+				}
+				
+				// Regardless of the character, add it to the returnable string
+				ret += ch;
+			}
+			
+			return ret;
 		}
 
 	}
@@ -336,8 +728,47 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int calculateNthPrime(int i) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		
+		// Don't work if target number is 0 or below
+		if(i<1)
+			throw new IllegalArgumentException();
+		ArrayList<Integer> ints = new ArrayList<Integer>();
+		
+		
+		// Handle basic cases of known prime numbers
+		switch(i)
+		{
+		case 1:
+			return 2;
+		case 2: 
+			return 3;
+		case 3:
+			return 5;
+		case 4:
+			return 7;
+		case 5:
+			return 11;
+		case 6:
+			return 13;
+		}
+		
+		// keep track of prime numbers beyond the 6th
+		ints.add(2);
+		ints.add(3);
+		ints.add(5);
+		ints.add(7);
+		ints.add(11);
+		ints.add(13);
+		
+		// Keep adding prime numbers until the target one is found
+		for(int rust = 17; ints.size() < i; rust += 2)
+		{
+			if(isPrime(rust))
+				ints.add(rust);
+		}
+		
+		// Return the number at the end, for it is the target number
+		return ints.get(ints.size() - 1);
 	}
 
 	/**
@@ -372,9 +803,48 @@ public class EvaluationService {
 		 * @param string
 		 * @return
 		 */
-		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+		public static String encode(String string) 
+		{
+			// Set up an empty string and null-check the parameter
+			String ret = "";
+			
+			if(string == null)
+				return ret;
+			
+			// Go through each letter and perform the operation
+			for(int c = 0, rust = 0; c < string.length(); c++)
+			{
+				char ch = string.charAt(c);
+				
+				// For both capital and lower-case letters, set letter value 
+				// to raw numeric value, perform the switching operation, and 
+				// Restore it to letter status
+				if(ch >= 'a' && ch <= 'z')
+				{
+					ch -= 'a';
+					ch = (char) (25 - ch);
+					ch += 'a';
+				}
+				else if(ch >= 'A' && ch <= 'Z')
+				{
+					ch -= 'A';
+					ch = (char) (25 - ch);
+					ch += 'A';
+				}
+				else if(!(ch >= '0' && ch <= '9'))
+					continue; // make sure to include numbers
+				ret += ch;
+				
+				// Check to ensure spaces are added after every five letters
+				if(rust % 5 == 4)
+					ret += " ";
+				
+				// rust (variable) is used since some characters are omitted from the resulting cipher
+				rust++;
+			}
+			
+			// Needs to be lower-case and trimmed
+			return ret.toLowerCase().trim();
 		}
 
 		/**
@@ -384,8 +854,34 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			// Set up empty string and null-check the parameter
+			String ret = "";
+			
+			if(string == null)
+				return ret;
+			
+			// Perform the same loop as in decode but omitting the spacing step
+			for(int c = 0; c < string.length(); c++)
+			{
+				char ch = string.charAt(c);
+				if(ch >= 'a' && ch <= 'z')
+				{
+					ch -= 'a';
+					ch = (char) (25 - ch);
+					ch += 'a';
+				}
+				else if(ch >= 'A' && ch <= 'Z')
+				{
+					ch -= 'A';
+					ch = (char) (25 - ch);
+					ch += 'A';
+				}
+				else if(!(ch >= '0' && ch <= '9'))
+					continue;
+				ret += ch;
+			}
+			
+			return ret;
 		}
 	}
 
@@ -411,9 +907,33 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public boolean isValidIsbn(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+	public boolean isValidIsbn(String string) 
+	{
+		// Set up collection of Integers to operate on
+		ArrayList<Integer> ints = new ArrayList<Integer>();
+		
+		for(int c = 0; c < string.length();c++)
+		{
+			char character = string.charAt(c);
+			// If character is a number add it
+			if(character >= 48 && character <= 57)
+				ints.add(character - 48);
+			
+			// if Character is an 'x/X', treat it like a ten
+			else if (character == 'x' || character == 'X')
+				ints.add(10);
+		}
+		
+		// Number needs to be 10 digits
+		if(ints.size() != 10)
+			return false;
+	
+		// Get the sum of all digits
+		int operand = 0;
+		for(int c = 0; c < 10; c++)
+			operand += (ints.get(c) * (10 - c));
+		// mod by 11 to get number's validity
+		return operand % 11 == 0;
 	}
 
 	/**
@@ -429,9 +949,36 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public boolean isPangram(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+	public boolean isPangram(String string)
+	{
+		// Set up array of booleans to get the status of each letter
+		boolean [] letterEncountered = new boolean[26];
+		
+		// Go through the entire string
+		for(int c = 0; c < string.length();c++)
+		{
+			char character = string.charAt(c);
+			
+			// For each letter, mark it as encountered
+			if(character >= 'a' && character <= 'z')
+			{
+				letterEncountered[(int)character - (int)'a'] = true;
+			}
+			else if(character >= 'A' && character <= 'Z')
+			{
+				letterEncountered[(int)character - (int)'A'] = true;
+			}
+		}
+		
+		// If one letter has not been encountered, not a pangram
+		for(int rust = 0; rust < letterEncountered.length; rust++)
+		{
+			if(!letterEncountered[rust])
+				return false;
+		}
+		
+		// All letters have been encountered
+		return true;
 	}
 
 	/**
@@ -442,9 +989,38 @@ public class EvaluationService {
 	 * @param given
 	 * @return
 	 */
-	public Temporal getGigasecondDate(Temporal given) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public Temporal getGigasecondDate(Temporal given) 
+	{
+		// Return null if we're given null
+		if(given == null)
+			return null;
+		
+		// Set up values for if the given Temporal supports it or not
+		int hour = 0, minute = 0, second = 0, sunSec = 0;
+		
+		try
+		{
+			hour = given.get(ChronoField.HOUR_OF_DAY);
+			minute = given.get(ChronoField.MINUTE_OF_HOUR);
+			second = given.get(ChronoField.SECOND_OF_MINUTE);
+			sunSec = given.get(ChronoField.NANO_OF_SECOND);
+		}
+		catch(UnsupportedTemporalTypeException e)
+		{
+			// If the Temporal does not support a given field, simply leave it as 0
+		}
+		
+		// Set up a new temporal to return, with most fields initialized
+		Temporal t = LocalDateTime.of(given.get(ChronoField.YEAR),
+				given.get(ChronoField.MONTH_OF_YEAR),
+				given.get(ChronoField.DAY_OF_MONTH),
+				hour,
+				minute,
+				second,
+				sunSec);
+		
+		// add the Gigasecond to the time
+		return t.plus((long)1000000000, ChronoUnit.SECONDS);
 	}
 
 	/**
@@ -460,9 +1036,39 @@ public class EvaluationService {
 	 * @param set
 	 * @return
 	 */
-	public int getSumOfMultiples(int i, int[] set) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+	public int getSumOfMultiples(int i, int[] set) 
+	{
+		// Check for invalid input
+		if(set == null || i < 1 || set.length == 0)
+			return 0;
+		
+		// Set up a collection of multiples
+		ArrayList<Integer> ints = new ArrayList<Integer>();
+		
+		// Get the multiples of each value
+		for(int C = 0; C < set.length; C++)
+		{
+			int mult = set[C];
+			// Make sure their products are not above the max value
+			for(int rust = 1; rust * mult < i; rust++)
+			{
+				// Needs to be unique, don't add if already present
+				if(ints.contains(new Integer(rust*mult)))
+					continue;
+				
+				// Add the value
+				ints.add(new Integer(rust* mult));
+			}
+		}
+		
+		int returnable = 0;
+		
+		// Now add all the numbers up
+		for(int rust = 0; rust < ints.size();rust++)
+			returnable += ints.get(rust);
+		
+		
+		return returnable;
 	}
 
 	/**
@@ -501,9 +1107,70 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public boolean isLuhnValid(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+	public boolean isLuhnValid(String string) 
+	{
+		// Take care of invalid input
+		if(string == null || string == "")
+			return false;
+		
+		// Set up a string of only numbers
+		String nums = "";
+		for(int rust = 0; rust < string.length(); rust++)
+		{
+			char ch = string.charAt(rust);
+			if(ch >= '0' && ch <= '9')
+				nums += ch;
+			
+			// Spaces are allowed, other non-numerics are not
+			else if(ch != ' ')
+				return false;
+		}
+		
+		// Start adding to the modified number
+		String nums2 = "" + nums.charAt(nums.length()-1);
+		
+		// Go through, starting at the end and double every other digit
+		for(int c = nums.length() - 2, rust = 0; c >= 0; c--, rust++)
+		{
+			if(rust % 2 == 0)
+			{
+				int chd = (int)(nums.charAt(c) - '0');
+				
+				// double the digit
+				chd *= 2;
+				
+				// If above nine, reduce by 9
+				if(chd > 9)
+					chd -= 9;
+				
+				// Return number to a character number
+				chd += '0';
+				
+				// Add to the updated string
+				nums2 = (char)chd + nums2;
+			}
+			else
+				nums2 = nums.charAt(c) + nums2;
+		}
+		
+		// Convert the string to a collection of integers
+		ArrayList<Integer> sums = new ArrayList<Integer>();
+		
+		for(int c = 0; c < nums2.length(); c++)
+		{
+			sums.add(nums2.charAt(c) - 48);
+		}
+		
+		// Prepare to add these digits
+		int sum = 0;
+		
+		for(int rust = 0; rust < sums.size();rust++)
+		{
+			sum += sums.get(rust);
+		}
+		
+		// whether or not the number is divisible by 10
+		return sum % 10 == 0;
 	}
 
 	/**
@@ -533,8 +1200,54 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public int solveWordProblem(String string) {
-		// TODO Write an implementation for this method declaration
+	public int solveWordProblem(String string) 
+	{
+		// Handle null parameter case
+		if(string == null)
+			return 0;
+		
+		// Split the words by white-space
+		String[] words = string.split("[ \n\t\r]++");
+		
+		// All expected input has at least 5 words in them
+		if(words.length < 5)
+			return 0;
+		// Get the value of the question
+		int a = 0, b = 0;
+		try
+		{
+			// Get the first number easily
+			a = Integer.parseInt(words[2]);
+			
+			// Filter out the question marks
+			words[4] = words[4].replace("?", "");
+			if(words.length > 5)
+				words[5] = words[5].replace("?", "");
+			
+			// Figure out what operation we're actually doing
+			// Plus/minus indicate the second number is index 4
+			// Multiply/Divide "by" indicate 2nd number is index 5
+			switch(words[3])
+			{
+			case "plus":
+				b = Integer.parseInt(words[4]);
+				return a + b;
+			case "minus":
+				b = Integer.parseInt(words[4]);
+				return a - b;
+			case "multiplied":
+				b = Integer.parseInt(words[5]);
+				return a * b;
+			case "divided":
+				b = Integer.parseInt(words[5]);
+				return a / b;
+			}
+		}
+		catch(NumberFormatException | ArithmeticException e)
+		{
+			return 0;
+		}
+		
 		return 0;
 	}
 
